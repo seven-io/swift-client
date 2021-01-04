@@ -12,29 +12,35 @@ struct swift_client {
         ProcessInfo.processInfo.environment["SMS77_DUMMY_API_KEY"] ?? ""
     }
 
-    func balance() -> Float? {
+    func request(endpoint: String, method: String = "GET") -> String? {
         let group = DispatchGroup()
         group.enter()
 
-        var balance: Float? = nil
-        var request = URLRequest(url: makeUrl(endpoint: "balance"), cachePolicy: .reloadIgnoringLocalAndRemoteCacheData)
+        var response: String? = nil
+        var request = URLRequest(url: makeUrl(endpoint: endpoint), cachePolicy: .reloadIgnoringLocalAndRemoteCacheData)
+        request.httpMethod = method
         request.addValue("Basic " + getApiKey(), forHTTPHeaderField: "Authorization")
 
-        URLSession.shared.dataTask(with: request) { data, response, error in
+        URLSession.shared.dataTask(with: request) { data, _, error in
             if nil != data {
-                balance = Float(String(decoding: data!, as: UTF8.self))
+                response = String(decoding: data!, as: UTF8.self)
             }
 
             if (debug) {
-                print("balance: ", balance as Any)
+                print("response: ", response as Any)
             }
 
             group.leave()
         }.resume()
 
-
         group.wait()
 
-        return balance
+        return response
+    }
+
+    func balance() -> Float? {
+        let balance = request(endpoint: "balance", method: "GET")
+
+        return nil == balance ? nil : Float(balance!)
     }
 }
