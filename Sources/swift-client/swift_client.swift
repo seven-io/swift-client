@@ -30,14 +30,18 @@ struct swift_client {
 
         if hasPayload {
             let encodedPayload = try! JSONEncoder().encode(payload)
-            print(String(data: encodedPayload, encoding: String.Encoding.utf8) as Any)
+            //print(String(data: encodedPayload, encoding: String.Encoding.utf8) as Any)
             let children = Mirror(reflecting: try! JSONDecoder().decode(V.self, from: encodedPayload)).children
             if !children.isEmpty {
                 var p: [String: String] = [:]
 
+                /*
                 if isGET {
                     to += "?"
                 }
+                */
+
+                to += "?"
 
                 var i = 0
                 for child in children {
@@ -53,11 +57,15 @@ struct swift_client {
                         value = "\(value)"
 
                         if "nil" != value as! String {
+                            to += "\(0 == i ? "" : "&")\(label)=\(value)"
+
+                          /*
                             if isGET {
                                 to += "\(0 == i ? "" : "&")\(label)=\(value)"
                             } else {
                                 p[label] = (value as! String)
                             }
+                            */
                         }
                     }
 
@@ -70,16 +78,14 @@ struct swift_client {
             }
         }
         print("to: \(to)")
-        if nil != body {
-            print("body: ", body as Any)
-        }
         var request = URLRequest(url: URL(string: to)!, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData)
         request.httpMethod = method
         request.addValue("Basic " + ProcessInfo.processInfo.environment["SMS77_DUMMY_API_KEY"]!,
                 forHTTPHeaderField: "Authorization")
         request.addValue(sentWith, forHTTPHeaderField: "sentWith")
         if nil != body {
-            request.httpBody = body
+            //print("body: ", body as Any)
+            //request.httpBody = body
         }
 
         URLSession.shared.dataTask(with: request) { data, res, error in
@@ -131,7 +137,8 @@ struct swift_client {
     }
 
     public func contacts(params: ContactsParams) -> Any? {
-        let response = request(endpoint: "contacts", method: ContactsAction.del == params.action ? "POST" : "GET",
+        let response = request(endpoint: "contacts",
+         method: ContactsAction.del == params.action ? "POST" : "GET",
                 payload: params)
 
         if (nil == response) {
@@ -153,8 +160,9 @@ struct swift_client {
     }
 
     public func hooks(params: HooksParams) -> Any? {
-        let res = request(
-                endpoint: "hooks", method: HooksAction.read == params.action ? "GET" : "POST", payload: params)
+        let res = request(endpoint: "hooks",
+                 method: HooksAction.read == params.action ? "GET" : "POST",
+                payload: params)
 
         if (nil == res) {
             return nil
@@ -186,6 +194,29 @@ struct swift_client {
             return try! JSONDecoder().decode([JournalVoice].self, from: res!)
         case .replies:
             return try! JSONDecoder().decode([JournalReplies].self, from: res!)
+        }
+    }
+
+    public func lookup(params: LookupParams) -> Any? {
+        let res = request(endpoint: "lookup", method: "POST", payload: params)
+
+        if (nil == res) {
+            return nil
+        }
+
+        if (LookupType.mnp == params.type && true != params.json) {
+            return String(decoding: res!, as: UTF8.self)
+        }
+
+        switch params.type {
+        case .cnam:
+            return try! JSONDecoder().decode(LookupCnamResponse.self, from: res!)
+        case .mnp:
+            return try! JSONDecoder().decode(LookupMnpJsonResponse.self, from: res!)
+        case .format:
+            return try! JSONDecoder().decode(LookupFormatResponse.self, from: res!)
+        case .hlr:
+            return try! JSONDecoder().decode(LookupHlrResponse.self, from: res!)
         }
     }
 }

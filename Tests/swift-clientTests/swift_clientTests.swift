@@ -90,11 +90,32 @@ final class swift_clientTests: XCTestCase {
         sleep(1)
     }
 
+    func testLookup() {
+        let client = initClient()
+        var mnpParams = LookupParams(type: LookupType.mnp, number: "491771783130")
+
+        XCTAssertEqual(client.lookup(params: mnpParams) as! String, "eplus")
+        sleep(1)
+
+        mnpParams.json = true
+        let res = client.lookup(params: mnpParams) as! LookupMnpJsonResponse
+        XCTAssertGreaterThan(res.mnp.country.count, 0)
+        XCTAssertGreaterThan(res.mnp.international_formatted.count, 0)
+        XCTAssertGreaterThan(res.mnp.mccmnc.count, 0)
+        XCTAssertGreaterThan(res.mnp.national_format.count, 0)
+        XCTAssertGreaterThan(res.mnp.network.count, 0)
+        XCTAssertGreaterThan(res.mnp.number.count, 0)
+        XCTAssertGreaterThanOrEqual(res.code, 100)
+        XCTAssertGreaterThanOrEqual(res.price, Float(0))
+        sleep(1)
+    }
+
     static var allTests = [
         ("testAnalytics", testAnalytics),
         ("testBalance", testBalance),
         ("testContacts", testContacts),
         ("testHooks", testHooks),
         ("testJournal", testJournal),
+        ("testLookup", testLookup),
     ]
 }
