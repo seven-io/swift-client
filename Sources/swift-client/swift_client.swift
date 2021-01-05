@@ -169,4 +169,23 @@ struct swift_client {
             return try! JSONDecoder().decode(HooksUnsubscribeResponse.self, from: res!)
         }
     }
+
+    public func journal(params: JournalParams) -> [JournalBase]? {
+        let res = request(endpoint: "journal", method: "GET", payload: params)
+
+        if (nil == res) {
+            return nil
+        }
+
+        switch params.type {
+        case .outbound:
+            return try! JSONDecoder().decode([JournalOutbound].self, from: res!)
+        case .inbound:
+            return try! JSONDecoder().decode([JournalInbound].self, from: res!)
+        case .voice:
+            return try! JSONDecoder().decode([JournalVoice].self, from: res!)
+        case .replies:
+            return try! JSONDecoder().decode([JournalReplies].self, from: res!)
+        }
+    }
 }

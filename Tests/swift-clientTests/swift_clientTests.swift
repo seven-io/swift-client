@@ -66,10 +66,35 @@ final class swift_clientTests: XCTestCase {
         sleep(1)
     }
 
+    func testJournal() {
+        func baseAsserts(base: JournalBase) {
+          XCTAssertNotNil(base.from.count)
+          XCTAssertNotEqual(base.id.count, 0)
+          XCTAssertNotEqual(base.price.count, 0)
+          XCTAssertNotNil(base.text.count)
+          XCTAssertNotEqual(base.timestamp.count, 0)
+          XCTAssertNotNil(base.to.count)
+        }
+
+        let journals =
+        initClient().journal(params: JournalParams(type: JournalType.outbound))
+         as! [JournalOutbound]
+
+        for journal in journals {
+          baseAsserts(base: journal)
+
+          XCTAssertNotEqual(journal.connection.count, 0)
+          XCTAssertNotEqual(journal.type.count, 0)
+        }
+
+        sleep(1)
+    }
+
     static var allTests = [
         ("testAnalytics", testAnalytics),
         ("testBalance", testBalance),
         ("testContacts", testContacts),
         ("testHooks", testHooks),
+        ("testJournal", testJournal),
     ]
 }
