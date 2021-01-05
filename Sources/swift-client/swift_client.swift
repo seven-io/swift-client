@@ -5,9 +5,6 @@ enum InvalidArgumentError: Error {
     case emptyApiKey
 }
 
-struct Payload {
-}
-
 struct swift_client {
     var debug: Bool = false
     var sentWith: String = "Swift"
@@ -21,7 +18,7 @@ struct swift_client {
         self.apiKey = apiKey
     }
 
-    private func request<V>(endpoint: String, method: String = "GET", payload: V?) -> Data? where V: Encodable {
+    private func request<V>(endpoint: String, method: String = "GET", payload: V?) -> Data? where V: Codable {
         let isGET = "GET" == method
         let hasPayload = nil != payload
         let group = DispatchGroup()
@@ -32,7 +29,9 @@ struct swift_client {
         var to = "https://gateway.sms77.io/api/" + endpoint
 
         if hasPayload {
-            let children = Mirror(reflecting: payload!).children
+            let encodedPayload = try! JSONEncoder().encode(payload)
+            print(String(data: encodedPayload, encoding: String.Encoding.utf8) as Any)
+            let children = Mirror(reflecting: try! JSONDecoder().decode(V.self, from: encodedPayload)).children
             if !children.isEmpty {
                 var p: [String: String] = [:]
 
@@ -66,7 +65,7 @@ struct swift_client {
                 }
 
                 if !p.isEmpty {
-                    body = try! JSONEncoder().encode(p)
+                    body = encodedPayload
                 }
             }
         }
@@ -123,7 +122,7 @@ struct swift_client {
     }
 
     public func balance() -> Float? {
-        struct BalanceParams: Encodable {
+        struct BalanceParams: Codable {
         }
 
         let balance = request(endpoint: "balance", method: "GET", payload: BalanceParams())
@@ -150,6 +149,24 @@ struct swift_client {
             return try! JSONDecoder().decode(ContactsWriteResponse.self, from: response!)
         case .del:
             return try! JSONDecoder().decode(ContactsWriteResponse.self, from: response!)
+        }
+    }
+
+    public func hooks(params: HooksParams) -> Any? {
+        let res = request(
+                endpoint: "hooks", method: HooksAction.read == params.action ? "GET" : "POST", payload: params)
+
+        if (nil == res) {
+            return nil
+        }
+
+        switch params.action {
+        case .read:
+            return try! JSONDecoder().decode(HooksReadResponse.self, from: res!)
+        case .subscribe:
+            return try! JSONDecoder().decode(HooksSubscribeResponse.self, from: res!)
+        case .unsubscribe:
+            return try! JSONDecoder().decode(HooksUnsubscribeResponse.self, from: res!)
         }
     }
 }

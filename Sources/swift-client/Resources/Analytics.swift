@@ -1,20 +1,18 @@
 import Foundation
 
-enum AnalyticsGroupBy: String {
-    case date = "date"
-    case label = "label"
-    case subaccount = "subaccount"
-    case country = "country"
+enum AnalyticsGroupBy: String, Codable {
+    case date
+    case label
+    case subaccount
+    case country
 }
 
-struct AnalyticsParams: Encodable {
+struct AnalyticsParams: Codable {
     var end: String?
     var group_by: AnalyticsGroupBy = AnalyticsGroupBy.date
     var label: String?
     var start: String?
     var subaccounts: String?
-
-    func encode(to encoder: Encoder) throws {}
 }
 
 protocol AnalyticBase: Codable {

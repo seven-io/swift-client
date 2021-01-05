@@ -1,10 +1,4 @@
-enum ContactsAction: String {
-    case del = "del"
-    case read = "read"
-    case write = "write"
-}
-
-struct ContactsParams: Encodable {
+struct ContactsParams: Codable {
     let action: ContactsAction
 
     var email: String?
@@ -13,12 +7,13 @@ struct ContactsParams: Encodable {
     var json: Bool?
     var nick: String?
 
-    init(action: ContactsAction) {
-        self.action = action
-    }
+    init(action: ContactsAction) {self.action = action}
+}
 
-    func encode(to encoder: Encoder) throws {
-    }
+enum ContactsAction: String, Codable {
+    case del
+    case read
+    case write
 }
 
 struct ContactsWriteResponse: Decodable {
