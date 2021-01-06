@@ -1,10 +1,10 @@
 struct ValidateForVoiceParams: Codable {
-  var callback: String?
-  var number: String
+    var callback: String?
+    var number: String
 
-  init(number: String) {
-    self.number = number
-  }
+    init(number: String) {
+        self.number = number
+    }
 }
 
 struct ValidateForVoiceResponse: Decodable {

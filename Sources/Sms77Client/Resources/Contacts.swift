@@ -7,7 +7,9 @@ struct ContactsParams: Codable {
     var json: Bool?
     var nick: String?
 
-    init(action: ContactsAction) {self.action = action}
+    init(action: ContactsAction) {
+        self.action = action
+    }
 }
 
 enum ContactsAction: String, Codable {

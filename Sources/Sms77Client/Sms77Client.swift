@@ -6,11 +6,11 @@ enum InvalidArgumentError: Error {
 }
 
 enum StringBool: String, Codable {
-  case `true`
-  case `false`
+    case `true`
+    case `false`
 }
 
-struct swift_client {
+struct Sms77Client {
     var debug: Bool = false
     var sentWith: String = "Swift"
     var apiKey: String
@@ -24,30 +24,20 @@ struct swift_client {
     }
 
     private func request<V>(endpoint: String, method: String = "GET", payload: V?) -> Data? where V: Codable {
-        let isGET = "GET" == method
         let hasPayload = nil != payload
         let group = DispatchGroup()
         group.enter()
 
-        var body: Data? = nil
         var response: Data? = nil
         var to = "https://gateway.sms77.io/api/" + endpoint
 
         if hasPayload {
             let encodedPayload = try! JSONEncoder().encode(payload)
-            //print(String(data: encodedPayload, encoding: String.Encoding.utf8) as Any)
             let children = Mirror(reflecting: try! JSONDecoder().decode(V.self, from: encodedPayload)).children
             if !children.isEmpty {
-                var p: [String: String] = [:]
-
-                /*
-                if isGET {
-                    to += "?"
-                }
-                */
-
                 to += "?"
 
+                let p: [String: String] = [:]
                 var args = 0
                 for child in children {
                     var value = child.value
@@ -59,9 +49,7 @@ struct swift_client {
                             value = false == value as! Bool ? 0 : 1
                         }
 
-                        //let str = String(decoding: value, as: UTF8.self)
-                       value = "\(value)"
-                        // value = String(decoding: value!, as: UTF8.self)
+                        value = "\(value)"
 
                         if value is String {
                             value = (value as! String).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
@@ -70,35 +58,20 @@ struct swift_client {
                         if "nil" != value as! String {
                             to += "\(0 == args ? "" : "&")\(label)=\(value)"
 
-                          /*
-                            if isGET {
-                                to += "\(0 == i ? "" : "&")\(label)=\(value)"
-                            } else {
-                                p[label] = (value as! String)
-                            }
-                            */
-
                             args += 1
                         }
                     }
 
                 }
-
-                if !p.isEmpty {
-                    body = encodedPayload
-                }
             }
         }
+
         print("to: \(to)")
+
         var request = URLRequest(url: URL(string: to)!, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData)
         request.httpMethod = method
-        request.addValue("Basic " + ProcessInfo.processInfo.environment["SMS77_DUMMY_API_KEY"]!,
-                forHTTPHeaderField: "Authorization")
+        request.addValue("Basic \(apiKey)", forHTTPHeaderField: "Authorization")
         request.addValue(sentWith, forHTTPHeaderField: "sentWith")
-        if nil != body {
-            //print("body: ", body as Any)
-            //request.httpBody = body
-        }
 
         URLSession.shared.dataTask(with: request) { data, res, error in
             response = data
@@ -150,7 +123,7 @@ struct swift_client {
 
     public func contacts(params: ContactsParams) -> Any? {
         let response = request(endpoint: "contacts",
-         method: ContactsAction.del == params.action ? "POST" : "GET",
+                method: ContactsAction.del == params.action ? "POST" : "GET",
                 payload: params)
 
         if (nil == response) {
@@ -173,7 +146,7 @@ struct swift_client {
 
     public func hooks(params: HooksParams) -> Any? {
         let res = request(endpoint: "hooks",
-                 method: HooksAction.read == params.action ? "GET" : "POST",
+                method: HooksAction.read == params.action ? "GET" : "POST",
                 payload: params)
 
         if (nil == res) {
@@ -276,20 +249,21 @@ struct swift_client {
         let lines = str.split(whereSeparator: \.isNewline)
 
         return StatusResponse(
-        report: lines[0] as! StatusReportCode, timestamp: lines[1] as! String)
+                report: StatusReportCode(rawValue: String(lines[0]))!,
+                timestamp: String(lines[1]))
     }
 
     public func validateForVoice(params: ValidateForVoiceParams)
-    -> ValidateForVoiceResponse? {
+                    -> ValidateForVoiceResponse? {
         let res = request(
-          endpoint: "validate_for_voice", method: "POST", payload: params)
+                endpoint: "validate_for_voice", method: "POST", payload: params)
 
         if (nil == res) {
             return nil
         }
 
         return try! JSONDecoder()
-          .decode(ValidateForVoiceResponse.self, from: res!)
+                .decode(ValidateForVoiceResponse.self, from: res!)
     }
 
     public func voice(params: VoiceParams) -> Any? {
@@ -308,8 +282,8 @@ struct swift_client {
         let lines = str.split(whereSeparator: \.isNewline)
 
         return VoiceResponse(
-        code: Int(lines[0])!,
-        cost: Float(lines[1])!,
-        id: Int(lines[2])!)
+                code: Int(lines[0])!,
+                cost: Float(lines[1])!,
+                id: Int(lines[2])!)
     }
 }

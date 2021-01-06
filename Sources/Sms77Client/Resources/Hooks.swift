@@ -4,13 +4,15 @@ struct HooksParams: Codable {
     var request_method: HookRequestMethod?
     var target_url: String?
 
-    init(action: HooksAction) {self.action = action}
+    init(action: HooksAction) {
+        self.action = action
+    }
 }
 
 enum HooksAction: String, Codable {
-  case subscribe
-  case read
-  case unsubscribe
+    case subscribe
+    case read
+    case unsubscribe
 }
 
 enum HookRequestMethod: String, Codable {

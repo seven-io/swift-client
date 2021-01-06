@@ -1,7 +1,7 @@
 import XCTest
 
-import swift_clientTests
+import Sms77ClientTests
 
 var tests = [XCTestCaseEntry]()
-tests += swift_clientTests.allTests()
+tests += Sms77ClientTests.allTests()
 XCTMain(tests)

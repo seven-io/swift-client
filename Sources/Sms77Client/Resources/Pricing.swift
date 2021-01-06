@@ -1,11 +1,11 @@
 enum PricingFormat: String, Codable {
-  case csv
-  case json
+    case csv
+    case json
 }
 
 struct PricingParams: Codable {
-  var country: String?
-  var format: PricingFormat?
+    var country: String?
+    var format: PricingFormat?
 }
 
 struct CountryNetwork: Decodable {
