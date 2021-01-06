@@ -175,8 +175,17 @@ final class swift_clientTests: XCTestCase {
       sleep(1)
     }
 
+    func testStatus() {
+      let client = initClient()
+      var params = StatusParams(msg_id: "77133086945")
+
+      XCTAssertEqual((client.status(params: params) as! String)
+      .split(whereSeparator: \.isNewline).count, 2)
+
+      sleep(1)
+    }
+
     static var allTests = [
-      /*
       ("testAnalytics", testAnalytics),
       ("testBalance", testBalance),
       ("testContacts", testContacts),
@@ -184,7 +193,7 @@ final class swift_clientTests: XCTestCase {
       ("testJournal", testJournal),
       ("testLookup", testLookup),
       ("testPricing", testPricing),
-      */
-            ("testSms", testSms),
+      ("testSms", testSms),
+      ("testStatus", testStatus),
     ]
 }

@@ -252,4 +252,23 @@ struct swift_client {
 
         return try! JSONDecoder().decode(SmsResponse.self, from: res!)
     }
+
+    public func status(params: StatusParams) -> Any? {
+        let res = request(endpoint: "status", method: "GET", payload: params)
+
+        if (nil == res) {
+            return nil
+        }
+
+        let str = String(decoding: res!, as: UTF8.self)
+
+        if (true != params._json) {
+            return str
+        }
+
+        let lines = str.split(whereSeparator: \.isNewline)
+
+        return StatusResponse(
+        report: lines[0] as! StatusReportCode, timestamp: lines[1] as! String)
+    }
 }
