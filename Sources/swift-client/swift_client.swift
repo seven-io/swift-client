@@ -5,6 +5,11 @@ enum InvalidArgumentError: Error {
     case emptyApiKey
 }
 
+enum StringBool: String, Codable {
+  case `true`
+  case `false`
+}
+
 struct swift_client {
     var debug: Bool = false
     var sentWith: String = "Swift"
@@ -232,5 +237,19 @@ struct swift_client {
         }
 
         return try! JSONDecoder().decode(PricingResponse.self, from: res!)
+    }
+
+    public func sms(params: SmsParams) -> Any? {
+        let res = request(endpoint: "sms", method: "POST", payload: params)
+
+        if (nil == res) {
+            return nil
+        }
+
+        if (true != params.json) {
+            return String(decoding: res!, as: UTF8.self)
+        }
+
+        return try! JSONDecoder().decode(SmsResponse.self, from: res!)
     }
 }

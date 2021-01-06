@@ -3,9 +3,6 @@ enum LookupType: String, Codable {
   case mnp
   case format
   case hlr
-
-   //func encode(to: Encoder) {}
-   //init(from: Decoder) {}
 }
 
 enum HlrPortedCode: String, Decodable {
@@ -14,8 +11,6 @@ enum HlrPortedCode: String, Decodable {
   case    not_ported
   case  assumed_not_ported
   case assumed_ported
-
-         //init(from: Decoder) {}
 }
 
 enum HlrReachableCode: String, Decodable {
@@ -25,14 +20,10 @@ enum HlrReachableCode: String, Decodable {
   case   absent
   case   bad_number
   case   blacklisted
-
-         //init(from: Decoder) {}
 }
 
 enum HlrRoamingCode: String, Decodable {
   case not_roaming
-
-         //init(from: Decoder) {}
 }
 
 enum NetworkType: String, Decodable {
@@ -48,31 +39,23 @@ enum NetworkType: String, Decodable {
     case unknown
     case voicemail
     case voip
-
-          // init(from: Decoder) {}
 }
 
 enum HlrStatusMessageCode: String, Decodable {
   case error
   case success
-
-        // init(from: Decoder) {}
 }
 
 enum RoamingStatuscode: String, Decodable {
   case not_roaming
   case roaming
   case unknown
-
-    // init(from: Decoder) {}
 }
 
 enum HlrValidNumberCode:String,  Decodable {
   case unknown
   case valid
   case not_valid
-
-     //init(from: Decoder) {}
 }
 
 struct LookupParams: Codable {

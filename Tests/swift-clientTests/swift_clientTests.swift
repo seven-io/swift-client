@@ -140,7 +140,43 @@ final class swift_clientTests: XCTestCase {
       sleep(1)
     }
 
+    func testSms() {
+      let client = initClient()
+      var params = SmsParams(text: "HI2U!", to: "491771783130")
+
+      XCTAssertEqual((client.sms(params: params) as! String).count, 3)
+
+      params.json = true
+      let obj = client.sms(params: params) as! SmsResponse
+      XCTAssertGreaterThanOrEqual(obj.balance, 0)
+      XCTAssertNotNil(obj.debug)
+      XCTAssertNotNil(obj.sms_type)
+      XCTAssertEqual(obj.success.count, 3)
+      XCTAssertGreaterThanOrEqual(obj.total_price, Float(0))
+
+      for msg in obj.messages {
+        XCTAssertNotNil(msg.encoding)
+        XCTAssertGreaterThan((msg.error ?? " ").count, 0)
+        XCTAssertGreaterThan((msg.error_text ?? " ").count, 0)
+        XCTAssertGreaterThan((msg.id ?? " ").count, 0)
+        XCTAssertGreaterThan(msg.parts, 0)
+        XCTAssertGreaterThanOrEqual(msg.price, Float(0))
+        XCTAssertGreaterThan(msg.recipient.count, 0)
+        XCTAssertGreaterThan(msg.sender.count, 0)
+        XCTAssertNotNil(msg.success)
+        XCTAssertGreaterThan(msg.text.count, 0)
+
+        if nil != msg.messages {
+          for message in msg.messages! {
+            XCTAssertGreaterThan(message.count, 0)
+          }
+        }
+      }
+      sleep(1)
+    }
+
     static var allTests = [
+      /*
       ("testAnalytics", testAnalytics),
       ("testBalance", testBalance),
       ("testContacts", testContacts),
@@ -148,5 +184,7 @@ final class swift_clientTests: XCTestCase {
       ("testJournal", testJournal),
       ("testLookup", testLookup),
       ("testPricing", testPricing),
+      */
+            ("testSms", testSms),
     ]
 }
