@@ -48,7 +48,7 @@ struct swift_client {
 
                 to += "?"
 
-                var i = 0
+                var args = 0
                 for child in children {
                     var value = child.value
 
@@ -59,10 +59,16 @@ struct swift_client {
                             value = false == value as! Bool ? 0 : 1
                         }
 
-                        value = "\(value)"
+                        //let str = String(decoding: value, as: UTF8.self)
+                       value = "\(value)"
+                        // value = String(decoding: value!, as: UTF8.self)
+
+                        if value is String {
+                            value = (value as! String).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+                        }
 
                         if "nil" != value as! String {
-                            to += "\(0 == i ? "" : "&")\(label)=\(value)"
+                            to += "\(0 == args ? "" : "&")\(label)=\(value)"
 
                           /*
                             if isGET {
@@ -71,10 +77,11 @@ struct swift_client {
                                 p[label] = (value as! String)
                             }
                             */
+
+                            args += 1
                         }
                     }
 
-                    i += 1
                 }
 
                 if !p.isEmpty {
@@ -283,5 +290,26 @@ struct swift_client {
 
         return try! JSONDecoder()
           .decode(ValidateForVoiceResponse.self, from: res!)
+    }
+
+    public func voice(params: VoiceParams) -> Any? {
+        let res = request(endpoint: "voice", method: "POST", payload: params)
+
+        if (nil == res) {
+            return nil
+        }
+
+        let str = String(decoding: res!, as: UTF8.self)
+
+        if (true != params._json) {
+            return str
+        }
+
+        let lines = str.split(whereSeparator: \.isNewline)
+
+        return VoiceResponse(
+        code: Int(lines[0])!,
+        cost: Float(lines[1])!,
+        id: Int(lines[2])!)
     }
 }

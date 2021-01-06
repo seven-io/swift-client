@@ -177,7 +177,7 @@ final class swift_clientTests: XCTestCase {
 
     func testStatus() {
       let client = initClient()
-      var params = StatusParams(msg_id: "77133086945")
+      let params = StatusParams(msg_id: "77133086945")
 
       XCTAssertEqual((client.status(params: params) as! String)
       .split(whereSeparator: \.isNewline).count, 2)
@@ -187,14 +187,24 @@ final class swift_clientTests: XCTestCase {
 
     func testValidateForVoice() {
       let client = initClient()
-      var params = ValidateForVoiceParams(number: "491771783130")
-      var res = client.validateForVoice(params: params)
+      let params = ValidateForVoiceParams(number: "491771783130")
+      let res = client.validateForVoice(params: params)
 
-      XCTAssertGreaterThan((res!.code ?? " ").count ?? 1, 0)
-      XCTAssertGreaterThan((res!.error ?? " ").count ?? 1, 0)
-      XCTAssertGreaterThan((res!.formatted_output ?? " ").count ?? 1, 0)
-      XCTAssertGreaterThan((res!.id ?? " ").count ?? 1, 0)
-      XCTAssertGreaterThan((res!.sender ?? " ").count ?? 1, 0)
+      XCTAssertGreaterThan((res!.code ?? " ").count, 0)
+      XCTAssertGreaterThan((res!.error ?? " ").count, 0)
+      XCTAssertGreaterThan((res!.formatted_output ?? " ").count, 0)
+      XCTAssertGreaterThan((res!.id ?? " ").count, 0)
+      XCTAssertGreaterThan((res!.sender ?? " ").count, 0)
+
+      sleep(1)
+    }
+
+    func testVoice() {
+      let client = initClient()
+      let params = VoiceParams(text: "Hey friend!", to: "491771783130")
+
+      XCTAssertEqual((client.voice(params: params) as! String)
+      .split(whereSeparator: \.isNewline).count, 3)
 
       sleep(1)
     }
@@ -210,5 +220,6 @@ final class swift_clientTests: XCTestCase {
       ("testSms", testSms),
       ("testStatus", testStatus),
       ("testValidateForVoice", testValidateForVoice),
+      ("testVoice", testVoice),
     ]
 }
