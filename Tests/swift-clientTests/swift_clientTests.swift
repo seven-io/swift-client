@@ -110,12 +110,43 @@ final class swift_clientTests: XCTestCase {
         sleep(1)
     }
 
+    func testPricing() {
+      var params = PricingParams()
+
+      let obj = initClient().pricing(params: params) as! PricingResponse
+      XCTAssertGreaterThanOrEqual(obj.countCountries, 0)
+      XCTAssertGreaterThanOrEqual(obj.countNetworks, 0)
+      XCTAssertEqual(obj.countCountries, obj.countries.count)
+
+      for country in obj.countries {
+        XCTAssertGreaterThan(country.countryName.count, 0)
+
+        for network in country.networks {
+          for feature in network.features {
+            XCTAssertGreaterThan(feature.count, 0)
+          }
+          XCTAssertGreaterThan(network.mcc.count, 0)
+          for mncs in network.mncs {
+            XCTAssertGreaterThan(mncs.count, 0)
+          }
+          XCTAssertGreaterThan(network.price, Float(0))
+        }
+      }
+      sleep(1)
+
+      params.format = PricingFormat.csv
+      XCTAssertGreaterThan(
+        (initClient().pricing(params: params) as! String).count, 0)
+      sleep(1)
+    }
+
     static var allTests = [
-        ("testAnalytics", testAnalytics),
-        ("testBalance", testBalance),
-        ("testContacts", testContacts),
-        ("testHooks", testHooks),
-        ("testJournal", testJournal),
-        ("testLookup", testLookup),
+      ("testAnalytics", testAnalytics),
+      ("testBalance", testBalance),
+      ("testContacts", testContacts),
+      ("testHooks", testHooks),
+      ("testJournal", testJournal),
+      ("testLookup", testLookup),
+      ("testPricing", testPricing),
     ]
 }

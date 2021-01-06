@@ -219,4 +219,18 @@ struct swift_client {
             return try! JSONDecoder().decode(LookupHlrResponse.self, from: res!)
         }
     }
+
+    public func pricing(params: PricingParams) -> Any? {
+        let res = request(endpoint: "pricing", method: "GET", payload: params)
+
+        if (nil == res) {
+            return nil
+        }
+
+        if (PricingFormat.csv == params.format) {
+            return String(decoding: res!, as: UTF8.self)
+        }
+
+        return try! JSONDecoder().decode(PricingResponse.self, from: res!)
+    }
 }
