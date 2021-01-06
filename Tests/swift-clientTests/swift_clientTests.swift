@@ -185,6 +185,20 @@ final class swift_clientTests: XCTestCase {
       sleep(1)
     }
 
+    func testValidateForVoice() {
+      let client = initClient()
+      var params = ValidateForVoiceParams(number: "491771783130")
+      var res = client.validateForVoice(params: params)
+
+      XCTAssertGreaterThan((res!.code ?? " ").count ?? 1, 0)
+      XCTAssertGreaterThan((res!.error ?? " ").count ?? 1, 0)
+      XCTAssertGreaterThan((res!.formatted_output ?? " ").count ?? 1, 0)
+      XCTAssertGreaterThan((res!.id ?? " ").count ?? 1, 0)
+      XCTAssertGreaterThan((res!.sender ?? " ").count ?? 1, 0)
+
+      sleep(1)
+    }
+
     static var allTests = [
       ("testAnalytics", testAnalytics),
       ("testBalance", testBalance),
@@ -195,5 +209,6 @@ final class swift_clientTests: XCTestCase {
       ("testPricing", testPricing),
       ("testSms", testSms),
       ("testStatus", testStatus),
+      ("testValidateForVoice", testValidateForVoice),
     ]
 }

@@ -271,4 +271,17 @@ struct swift_client {
         return StatusResponse(
         report: lines[0] as! StatusReportCode, timestamp: lines[1] as! String)
     }
+
+    public func validateForVoice(params: ValidateForVoiceParams)
+    -> ValidateForVoiceResponse? {
+        let res = request(
+          endpoint: "validate_for_voice", method: "POST", payload: params)
+
+        if (nil == res) {
+            return nil
+        }
+
+        return try! JSONDecoder()
+          .decode(ValidateForVoiceResponse.self, from: res!)
+    }
 }
