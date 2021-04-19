@@ -22,7 +22,7 @@ let package = Package(
 import Sms77Client
 
 let apiKey = "MySms77ioApiKey"
-// alternatively setting apikey to nil will read SMS77_API_KEY from environment
+// alternatively setting apiKey to nil will read SMS77_API_KEY from environment
 // let apiKey = nil
 let client = try! Sms77Client(apiKey: apiKey)
 debugPrint(client.balance())
@@ -34,4 +34,6 @@ debugPrint(client.balance())
 
 ##### Support
 
-Need help? Feel free to send us an <a href='mailto: support@sms77.io'>email</a>.
+Need help? Feel free to [contact us](https://www.sms77.io/en/company/contact/).
+
+[![MIT](https://img.shields.io/badge/License-MIT-teal.svg)](./LICENSE)
