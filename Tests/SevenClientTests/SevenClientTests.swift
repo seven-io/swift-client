@@ -1,9 +1,9 @@
 import XCTest
-@testable import Sms77Client
+@testable import SevenClient
 
-final class Sms77ClientTests: XCTestCase {
-    func initClient() -> Sms77Client {
-        var client = try! Sms77Client(apiKey: ProcessInfo.processInfo.environment["SMS77_DUMMY_API_KEY"]!)
+final class SevenClientTests: XCTestCase {
+    func initClient() -> SevenClient {
+        var client = try! SevenClient(apiKey: ProcessInfo.processInfo.environment["SEVEN_DUMMY_API_KEY"]!)
 
         client.debug = true
         client.sentWith = "Swift-Test"
@@ -92,9 +92,9 @@ final class Sms77ClientTests: XCTestCase {
 
     func testLookup() {
         let client = initClient()
-        var mnpParams = LookupParams(type: LookupType.mnp, number: "491771783130")
+        var mnpParams = LookupParams(type: LookupType.mnp, number: "491716992343")
 
-        XCTAssertEqual(client.lookup(params: mnpParams) as! String, "eplus")
+        XCTAssertEqual(client.lookup(params: mnpParams) as! String, "d1")
         sleep(1)
 
         mnpParams.json = true
@@ -142,7 +142,7 @@ final class Sms77ClientTests: XCTestCase {
 
     func testSms() {
         let client = initClient()
-        var params = SmsParams(text: "HI2U!", to: "491771783130")
+        var params = SmsParams(text: "HI2U!", to: "491716992343")
 
         XCTAssertEqual((client.sms(params: params) as! String).count, 3)
 
@@ -190,7 +190,7 @@ final class Sms77ClientTests: XCTestCase {
 
     func testValidateForVoice() {
         let client = initClient()
-        let params = ValidateForVoiceParams(number: "491771783130")
+        let params = ValidateForVoiceParams(number: "491716992343")
         let res = client.validateForVoice(params: params)
 
         XCTAssertGreaterThan((res!.code ?? " ").count, 0)
@@ -204,7 +204,7 @@ final class Sms77ClientTests: XCTestCase {
 
     func testVoice() {
         let client = initClient()
-        let params = VoiceParams(text: "Hey friend!", to: "491771783130")
+        let params = VoiceParams(text: "Hey friend!", to: "491716992343")
 
         XCTAssertEqual((client.voice(params: params) as! String)
                 .split(whereSeparator: \.isNewline).count, 3)

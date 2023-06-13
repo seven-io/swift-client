@@ -1,6 +1,6 @@
-![Sms77.io Logo](https://www.sms77.io/wp-content/uploads/2019/07/sms77-Logo-400x79.png "Sms77.io Logo")
+![](https://www.seven.io/wp-content/uploads/Logo.svg "seven Logo")
 
-# Official Swift Client for the Sms77.io SMS Gateway API
+# Official Swift Client for the seven.io SMS Gateway API
 
 ## Installation
 
@@ -11,7 +11,7 @@ Package.swift:
 ```swift
 let package = Package(
         dependencies: [
-            .package(url: "https://github.com/sms77io/swift-client")
+            .package(url: "https://github.com/seven-io/swift-client")
         ]
 )
 ```
@@ -19,12 +19,12 @@ let package = Package(
 ### Usage
 
 ```swift
-import Sms77Client
+import SevenClient
 
-let apiKey = "MySms77ioApiKey"
-// alternatively setting apiKey to nil will read SMS77_API_KEY from environment
+let apiKey = "MySevenApiKey"
+// alternatively setting apiKey to nil will read SEVEN_API_KEY from environment
 // let apiKey = nil
-let client = try! Sms77Client(apiKey: apiKey)
+let client = try! SevenClient(apiKey: apiKey)
 debugPrint(client.balance())
 ```
 
@@ -34,6 +34,6 @@ debugPrint(client.balance())
 
 ##### Support
 
-Need help? Feel free to [contact us](https://www.sms77.io/en/company/contact/).
+Need help? Feel free to [contact us](https://www.seven.io/en/company/contact/).
 
-[![MIT](https://img.shields.io/badge/License-MIT-teal.svg)](./LICENSE)
+[![MIT](https://img.shields.io/badge/License-MIT-teal.svg)](LICENSE)

@@ -10,12 +10,12 @@ enum StringBool: String, Codable {
     case `false`
 }
 
-struct Sms77Client {
+struct SevenClient {
     var debug: Bool = false
     var sentWith: String = "Swift"
     var apiKey: String
 
-    init(apiKey: String = ProcessInfo.processInfo.environment["SMS77_API_KEY"] ?? "") throws {
+    init(apiKey: String = ProcessInfo.processInfo.environment["SEVEN_API_KEY"] ?? "") throws {
         guard !apiKey.isEmpty else {
             throw InvalidArgumentError.emptyApiKey
         }
@@ -29,7 +29,7 @@ struct Sms77Client {
         group.enter()
 
         var response: Data? = nil
-        var to = "https://gateway.sms77.io/api/" + endpoint
+        var to = "https://gateway.seven.io/api/" + endpoint
 
         if hasPayload {
             let encodedPayload = try! JSONEncoder().encode(payload)

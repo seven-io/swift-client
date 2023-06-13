@@ -3,19 +3,19 @@
 import PackageDescription
 
 let package = Package(
-        name: "Sms77Client",
+        name: "SevenClient",
         products: [
             .library(
-                    name: "Sms77Client",
-                    targets: ["Sms77Client"]),
+                    name: "SevenClient",
+                    targets: ["SevenClient"]),
         ],
         dependencies: [],
         targets: [
             .target(
-                    name: "Sms77Client",
+                    name: "SevenClient",
                     dependencies: []),
             .testTarget(
-                    name: "Sms77ClientTests",
-                    dependencies: ["Sms77Client"]),
+                    name: "SevenClientTests",
+                    dependencies: ["SevenClient"]),
         ]
 )
