@@ -24,6 +24,9 @@ enum HookEventType: String, Codable {
     case sms_mo
     case dlr
     case voice_status
+    case all
+    case tracking
+    case voice_call
 }
 
 struct Hook: Decodable {
