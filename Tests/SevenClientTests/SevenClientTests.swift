@@ -13,11 +13,8 @@ final class SevenClientTests: XCTestCase {
 
     func testAnalytics() {
         for analytic in initClient().analytics(params: AnalyticsParams())! {
-            if nil != analytic.direct {
-                XCTAssertGreaterThanOrEqual(analytic.direct!, 0)
-            }
-            if nil != analytic.economy {
-                XCTAssertGreaterThanOrEqual(analytic.economy!, 0)
+            if nil != analytic.sms {
+                XCTAssertGreaterThanOrEqual(analytic.sms!, 0)
             }
             XCTAssertGreaterThanOrEqual(analytic.hlr!, 0)
             XCTAssertGreaterThanOrEqual(analytic.inbound!, 0)
