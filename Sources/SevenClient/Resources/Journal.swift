@@ -2,6 +2,7 @@ struct JournalParams: Codable {
     var date_from: String?
     var date_to: String?
     var id: Int?
+    var limit: Int?
     var state: String?
     var to: String?
     var type: JournalType
