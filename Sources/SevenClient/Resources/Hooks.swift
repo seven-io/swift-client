@@ -1,5 +1,6 @@
 struct HooksParams: Codable {
     var action: HooksAction
+    var event_filter: String?
     var event_type: HookEventType?
     var request_method: HookRequestMethod?
     var target_url: String?
@@ -31,6 +32,7 @@ enum HookEventType: String, Codable {
 
 struct Hook: Decodable {
     var created: String
+    var event_filter: String?
     var event_type: HookEventType
     var id: String
     var request_method: HookRequestMethod
