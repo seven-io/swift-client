@@ -9,7 +9,6 @@ enum SmsEncoding: String, Codable {
 }
 
 struct SmsParams: Codable {
-    var debug: Bool?
     var delay: String?
     var details: Bool?
     var flash: Bool?
