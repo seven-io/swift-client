@@ -3,12 +3,12 @@ import XCTest
 
 final class SevenClientTests: XCTestCase {
     func initClient() -> SevenClient {
-        var client = try! SevenClient(apiKey: ProcessInfo.processInfo.environment["SEVEN_DUMMY_API_KEY"]!)
+        var seven = SevenClient(apiKey: ProcessInfo.processInfo.environment["SEVEN_API_KEY_SANDBOX"]!)
 
-        client.debug = true
-        client.sentWith = "Swift-Test"
+        seven.client.debug = true
+        seven.client.sentWith = "Swift-Test"
 
-        return client
+        return seven
     }
 
     func testAnalytics() {
@@ -23,13 +23,10 @@ final class SevenClientTests: XCTestCase {
             XCTAssertGreaterThanOrEqual(analytic.voice!, 0)
         }
 
-        sleep(1)
     }
 
     func testBalance() {
         XCTAssertGreaterThanOrEqual(initClient().balance()!, Float(0))
-
-        sleep(1)
     }
 
     func testContacts() {
@@ -44,8 +41,6 @@ final class SevenClientTests: XCTestCase {
             XCTAssertNotNil(contact.Name)
             XCTAssertNotNil(contact.Number)
         }
-
-        sleep(1)
     }
 
     func testHooks() {
@@ -59,8 +54,6 @@ final class SevenClientTests: XCTestCase {
             XCTAssertNotNil(hook.request_method)
             XCTAssertNotEqual(hook.target_url.count, 0)
         }
-
-        sleep(1)
     }
 
     func testJournal() {
@@ -83,8 +76,6 @@ final class SevenClientTests: XCTestCase {
             XCTAssertNotEqual(journal.connection.count, 0)
             XCTAssertNotEqual(journal.type.count, 0)
         }
-
-        sleep(1)
     }
 
     func testLookup() {
@@ -104,7 +95,6 @@ final class SevenClientTests: XCTestCase {
         XCTAssertGreaterThan(res.mnp.number.count, 0)
         XCTAssertGreaterThanOrEqual(res.code, 100)
         XCTAssertGreaterThanOrEqual(res.price, Float(0))
-        sleep(1)
     }
 
     func testPricing() {
@@ -129,12 +119,10 @@ final class SevenClientTests: XCTestCase {
                 XCTAssertGreaterThan(network.price, Float(0))
             }
         }
-        sleep(1)
 
         params.format = PricingFormat.csv
         XCTAssertGreaterThan(
                 (initClient().pricing(params: params) as! String).count, 0)
-        sleep(1)
     }
 
     func testSms() {
@@ -169,7 +157,6 @@ final class SevenClientTests: XCTestCase {
                 }
             }
         }
-        sleep(1)
     }
 
     func testStatus() {
@@ -182,7 +169,6 @@ final class SevenClientTests: XCTestCase {
         let obj = client.status(params: params) as! StatusResponse
         XCTAssertGreaterThan(obj.report.rawValue.count, 0)
         XCTAssertGreaterThan(obj.timestamp.count, 0)
-        sleep(1)
     }
 
     func testValidateForVoice() {
@@ -195,8 +181,6 @@ final class SevenClientTests: XCTestCase {
         XCTAssertGreaterThan((res!.formatted_output ?? " ").count, 0)
         XCTAssertGreaterThan((res!.id ?? " ").count, 0)
         XCTAssertGreaterThan((res!.sender ?? " ").count, 0)
-
-        sleep(1)
     }
 
     func testVoice() {
@@ -205,8 +189,101 @@ final class SevenClientTests: XCTestCase {
 
         XCTAssertEqual((client.voice(params: params) as! String)
                 .split(whereSeparator: \.isNewline).count, 3)
+    }
+    
+    func testSubaccountsRead() {
+        let client = initClient()
+        let subaccounts = client.subaccounts.read()!
+        
+        for subaccount in subaccounts {
+            let amount = subaccount.auto_topup.amount
+            let threshold = subaccount.auto_topup.threshold
+            
+            if (amount == nil) {
+                XCTAssertNil(threshold)
+            }
+            else {
+                XCTAssertGreaterThan(amount!, 0.0)
+            }
+        }
+    }
+    
+    func testSubaccountsCreate() {
+        let client = initClient()
+        let createParams = SubaccountsCreateParams(email: "tom_test@seven.dev", name: "Tom Test")
+        let createRes = client.subaccounts.create(params: createParams)!
+        
+        if (createRes.error == nil) {
+            XCTAssertTrue(createRes.success)
+        }
+        else {
+            XCTAssertFalse(createRes.success)
+        }
+    }
+    
+    func testSubaccountsDelete() {
+        let client = initClient()
+        let params = SubaccountsDeleteParams(id: 0)
+        let res = client.subaccounts.delete(params: params)!
 
-        sleep(1)
+        XCTAssertNotNil(res.error)
+        XCTAssertFalse(res.success)
+    }
+
+    func testSubaccounts() {
+        let client = initClient()
+        var subaccount: Subaccount? = nil
+        
+        // create
+        let timestamp = Date().timeIntervalSince1970
+        let email = String(timestamp) + "@seven.dev"
+        let createParams = SubaccountsCreateParams(email: email, name: "Tom Test")
+        let createRes = client.subaccounts.create(params: createParams)!
+        
+        if (createRes.error == nil) {
+            subaccount = createRes.subaccount!
+            
+            XCTAssertTrue(createRes.success)
+        }
+        else {
+            XCTAssertFalse(createRes.success)
+        }
+        
+        // transfer credits
+        
+        let transferCreditsParams = SubaccountsTransferCreditsParams(id: subaccount!.id, amount: 1.0)
+        let transferCreditsRes = client.subaccounts.transferCredits(params:transferCreditsParams)!
+        
+        if (transferCreditsRes.error == nil) {
+            XCTAssertTrue(transferCreditsRes.success)
+        }
+        else {
+            XCTAssertFalse(transferCreditsRes.success)
+        }
+
+        // auto charge
+
+        let autoChargeParams = SubaccountsAutoChargeParams(id: subaccount!.id, amount: 1.0, threshold: 1.0)
+        let autoChargeRes = client.subaccounts.autoCharge(params: autoChargeParams)!
+
+        if (autoChargeRes.error == nil) {
+            XCTAssertTrue(autoChargeRes.success)
+        }
+        else {
+            XCTAssertFalse(autoChargeRes.success)
+        }
+
+        // delete
+
+        let deleteParams = SubaccountsDeleteParams(id: subaccount!.id)
+        let deleteRes = client.subaccounts.delete(params:deleteParams)!
+
+        if (deleteRes.error == nil) {
+            XCTAssertTrue(deleteRes.success)
+        }
+        else {
+            XCTAssertFalse(deleteRes.success)
+        }
     }
 
     static var allTests = [
@@ -219,6 +296,7 @@ final class SevenClientTests: XCTestCase {
         ("testPricing", testPricing),
         ("testSms", testSms),
         ("testStatus", testStatus),
+        ("testSubaccounts", testSubaccounts),
         ("testValidateForVoice", testValidateForVoice),
         ("testVoice", testVoice),
     ]
