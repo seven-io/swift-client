@@ -1,5 +1,54 @@
 import Foundation
 
+struct ApiParams: Codable {
+    let group_by: String
+    
+    init(group_by: AnalyticsGroupBy, params: AnalyticsParams) {
+        self.group_by = group_by
+        self.end = params.end
+        self.label = params.label
+        self.start = params.start
+        self.subaccounts = params.subaccounts
+    }
+}
+
+struct Analytics {
+    var client: ApiClient
+
+    init(client: ApiClient) {
+        self.client = client
+    }
+
+    private func request(group_by: AnalyticsGroupBy, params: AnalyticsParams) -> [AnalyticBase]? {
+        let params = ApiParams(group_by, params)
+        return client.request(endpoint: "analytics", method: "GET", payload: params)
+    }
+
+    public func byDate(params: AnalyticsParams) -> [AnalyticGroupByDate]? {
+        let res = request(AnalyticsGroupBy.date, params)
+
+        return try! JSONDecoder().decode([AnalyticGroupByDate].self, from: res!)
+    }
+
+    public func byLabel(params: AnalyticsParams) -> [AnalyticGroupByLabel]? {
+        let res = request(AnalyticsGroupBy.label, params)
+
+        return try! JSONDecoder().decode([AnalyticGroupByLabel].self, from: res!)
+    }
+
+    public func bySubaccount(params: AnalyticsParams) -> [AnalyticGroupBySubaccount]? {
+        let res = request(AnalyticsGroupBy.subaccount, params)
+
+        return try! JSONDecoder().decode([AnalyticGroupBySubaccount].self, from: res!)
+    }
+
+    public func byCountry(params: AnalyticsParams) -> [AnalyticGroupByCountry]? {
+        let res = request(AnalyticsGroupBy.country, params)
+
+        return try! JSONDecoder().decode([AnalyticGroupByCountry].self, from: res!)
+    }
+}
+
 enum AnalyticsGroupBy: String, Codable {
     case date
     case label
@@ -9,7 +58,7 @@ enum AnalyticsGroupBy: String, Codable {
 
 struct AnalyticsParams: Codable {
     var end: String?
-    var group_by: AnalyticsGroupBy = AnalyticsGroupBy.date
+    // var group_by: AnalyticsGroupBy = AnalyticsGroupBy.date
     var label: String?
     var start: String?
     var subaccounts: String?

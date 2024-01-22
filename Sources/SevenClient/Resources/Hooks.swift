@@ -1,3 +1,32 @@
+struct Hooks {
+    var client: ApiClient
+
+    init(client: ApiClient) {
+        self.client = client
+    }
+
+    public func read(params: HooksParams) -> HooksReadResponse? {
+        let params = HooksParams(HooksAction.read)
+        let res = client.request(endpoint: "hooks", method: "GET", payload: params)
+
+        return try! JSONDecoder().decode(HooksReadResponse.self, from: res!)
+    }
+
+    public func subscribe(params: HooksParams) -> HooksSubscribeResponse? {
+        let params = HooksParams(HooksAction.subscribe)
+        let res = client.request(endpoint: "hooks", method: "POST", payload: params)
+
+        return try! JSONDecoder().decode(HooksSubscribeResponse.self, from: res!)
+    }
+
+    public func unsubscribe(params: HooksParams) -> HooksUnsubscribeResponse? {
+        let params = HooksParams(HooksAction.unsubscribe)
+        let res = client.request(endpoint: "hooks", method: "POST", payload: params)
+
+        return try! JSONDecoder().decode(HooksUnsubscribeResponse.self, from: res!)
+    }
+}
+
 struct HooksParams: Codable {
     var action: HooksAction
     var event_filter: String?

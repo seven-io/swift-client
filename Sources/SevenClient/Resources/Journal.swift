@@ -1,3 +1,43 @@
+struct Journal {
+    var client: ApiClient
+
+    init(client: ApiClient) {
+        self.client = client
+    }
+
+    private func request(params: JournalParams) -> [Any]? {
+        return client.request(endpoint: "journal", method: "GET", payload: params)
+    }
+
+    public func inbound(params: JournalParams) -> [JournalInbound]? {
+        params.type = JournalType.inbound
+        let res = request(params)
+
+        return try! JSONDecoder().decode([JournalInbound].self, from: res!)
+    }
+
+    public func outbound(params: JournalParams) -> [JournalOutbound]? {
+        params.type = JournalType.outbound
+        let res = request(params)
+
+        return try! JSONDecoder().decode([JournalOutbound].self, from: res!)
+    }
+
+    public func voice(params: JournalParams) -> [JournalVoice]? {
+        params.type = JournalType.voice
+        let res = request(params)
+
+        return try! JSONDecoder().decode([JournalVoice].self, from: res!)
+    }
+
+    public func replies(params: JournalParams) -> [JournalReplies]? {
+        params.type = JournalType.replies
+        let res = request(params)
+
+        return try! JSONDecoder().decode([JournalReplies].self, from: res!)
+    }
+}
+
 struct JournalParams: Codable {
     var date_from: String?
     var date_to: String?

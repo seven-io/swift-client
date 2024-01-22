@@ -1,8 +1,44 @@
+struct Lookup {
+    var client: ApiClient
+
+    init(client: ApiClient) {
+        self.client = client
+    }
+
+    public func cnam(params: LookupParams) -> [LookupCnamResponse]? {
+        params.type = LookupType.cnam
+        let res = client.request(endpoint: "lookup", method: "POST", payload: params)
+
+        return try! JSONDecoder().decode([LookupCnamResponse].self, from: res!)
+    }
+
+    public func format(params: LookupParams) -> [LookupFormatResponse]? {
+        params.type = LookupType.format
+        let res = client.request(endpoint: "lookup", method: "POST", payload: params)
+
+        return try! JSONDecoder().decode([LookupFormatResponse].self, from: res!)
+    }
+
+    public func hlr(params: LookupParams) -> [LookupHlrResponse]? {
+        params.type = LookupType.hlr
+        let res = client.request(endpoint: "lookup", method: "POST", payload: params)
+
+        return try! JSONDecoder().decode([LookupHlrResponse].self, from: res!)
+    }
+
+    public func mnp(params: LookupParams) -> [LookupMnpJsonResponse]? {
+        params.type = LookupType.mnp
+        let res = client.request(endpoint: "lookup", method: "POST", payload: params)
+
+        return try! JSONDecoder().decode([LookupMnpJsonResponse].self, from: res!)
+    }
+}
+
 enum LookupType: String, Codable {
     case cnam
-    case mnp
     case format
     case hlr
+    case mnp
 }
 
 enum HlrPortedCode: String, Decodable {
@@ -65,6 +101,10 @@ struct LookupParams: Codable {
 
     init(type: LookupType, number: String) {
         self.type = type
+        self.number = number
+    }
+
+    init(number: String) {
         self.number = number
     }
 }
